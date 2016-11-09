@@ -38,6 +38,12 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
                  left_join(CodeCatTable, by = c('SLCOD2'='CODE')) %>% rename(SolType2= CODETYPE) %>%
                  left_join(CodeCatTable, by = c('SLCOD3'='CODE')) %>% rename(SolType3 = CODETYPE)
 
+#donData$ContType1[is.na(donData$ContType1)==T] <- '*'
+#donData$ContType2[is.na(donData$ContType2)==T] <- '*'
+#donData$ContType3[is.na(donData$ContType3)==T] <- '*'
+#donData$SolType1[is.na(donData$SolType1)==T] <- '*'
+#donData$SolType2[is.na(donData$SolType2)==T] <- '*'
+#donData$SolType3[is.na(donData$SolType3)==T] <- '*'
 
 ##############################################
 #ADD NEW POTENTIALLY USEFUL COLUMNS TO DATA
@@ -54,8 +60,8 @@ donData$avg <- donData$CNTRLIF / donData$CNTMLIF
 # not using currently because it was linearly dependant
 
 # get average time between donations if multiple exist, otherwise NA
-donData$avgTime <- with(donData, ifelse(is.finite((CNMONF - CNMON1)/ (CNTMLIF-1)),(CNMONF - CNMON1)/ (CNTMLIF-1) ,NA)   )
-donData$avgTime[donData$avgTime==0] <- NA
+donData$avgTime <- with(donData, ifelse(is.finite((CNMONF - CNMON1)/ (CNTMLIF-1)),(CNMONF - CNMON1)/ (CNTMLIF-1) ,0)   )
+#donData$avgTime[donData$avgTime==0] <- NA
 
 
 ##############################################
@@ -81,14 +87,34 @@ summary(logModel)
 #install.packages('ROCR')
 library(ROCR)
 # make predictions on TEST set then give AUC
-p <- predict(logModel2, newdata=donTEST, type="response")
+p <- predict(logModel, newdata=donTEST, type="response")
 pr <- prediction(p, donTEST$donated)
 prf <- performance(pr, measure = "auc")
 prf@y.values[[1]]
+# AUC 0.7725
 
 # confusion matrix
 table(donTEST$donated,p>0.5)
 
+#install.packages('caret')
+library(caret)
+# idk exactly what this calculates, but most the variables deemed most important seem to make sense
+x<-varImp(logModel, scale = FALSE)
+x$variableName <- rownames(x)
+x[with(x,order(-Overall)),]
+
+##############################################
+# Second Order Model with some interactions included, attempting to maximize AUC
+##############################################
+
+
+logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON3+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF)^2, data = donTRAINING)
+
+p2 <- predict(logModel2, newdata=donTEST, type="response")
+pr2 <- prediction(p2, donTEST$donated)
+prf2 <- performance(pr2, measure = "auc")
+prf2@y.values[[1]]
+# AUC 0.7902888
 
 
 ##############################################
@@ -126,3 +152,30 @@ pr <- prediction(p, donTEST$donated)
 prf <- performance(pr, measure = "auc")
 prf@y.values[[1]]
 
+
+
+################################ Unsuccessful attempt at full second order model ###########
+
+# 
+# # create 2nd order data sets
+# donTRAININGresponse <- donTRAINING$donated
+# donTESTresponse <- donTEST$donated
+# donTRAINING2 <- data.frame(model.matrix(donated~.^2, model.frame(~.,donTRAINING,na.action='na.pass')) )
+# donTEST2 <- data.frame(model.matrix(donated~.^2,model.frame(~.,donTEST,na.action='na.pass')))
+# donTRAINING2 <- cbind(donTRAINING2, donTRAININGresponse)
+# donTEST2 <- cbind(donTEST2, donTESTresponse)
+# 
+# # renaming crap so it will work
+# names(donTEST2) <- names(donTRAINING2)
+# 
+# library(ROCR)
+# # fit 2nd order model
+# logModelAAA <- glm(donTRAININGresponse~., family ='binomial', data=donTRAINING2)
+# pAAA <- predict(logModelAAA, newdata=donTEST2, type="response")
+# prAAA <- prediction(pAAA, donTEST2$donTRAININGresponse)
+# prfAAA <- performance(prAAA, measure = "auc")
+# prfAAA@y.values[[1]]
+# # AUC not any better
+# dim(donTEST2$donTESTresponse)
+# 
+# table(donTEST$donTESTresponse,pAAA>0.5)
