@@ -77,11 +77,11 @@ donData$donated <- ifelse(donData$TARGDOL>0,1,0)
 # Split into TRAINING and TEST sets
 # Remove some columns
 TESTindices <- seq(from = 3,to = nrow(donData), by = 3)
-donTRAINING <- subset( donData[-TESTindices,], select=-c(STATCODE,TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
-donTEST <- subset( donData[TESTindices,] , select=-c(STATCODE, TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+donTRAINING <- subset( donData, select=-c(STATCODE,TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+donTEST <- subset( donData, select=-c(STATCODE, TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
 
-
-logModel <- glm(donated ~ . , data = donTRAINING)
+#fit basic logistic regression model
+logModel <- glm(donated ~ . , data = donTRAINING, family=binomial)
 summary(logModel)
 
 #install.packages('ROCR')
@@ -108,13 +108,47 @@ x[with(x,order(-Overall)),]
 ##############################################
 
 
-logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON3+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF)^2, data = donTRAINING)
+logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON3+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF)^2, data = donTRAINING, family=binomial)
 
 p2 <- predict(logModel2, newdata=donTEST, type="response")
 pr2 <- prediction(p2, donTEST$donated)
 prf2 <- performance(pr2, measure = "auc")
 prf2@y.values[[1]]
 # AUC 0.7902888
+
+##############################################
+#fit multiple regression model for predicting donation amount
+##############################################
+
+#split into training and test set again
+donTRAINING2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+donTEST2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+
+#filter data to only people that donated
+donTRAINING2 <- donTRAINING2[donTRAINING2$TARGDOL > 0,]
+
+#fit multiple regression model
+mrModel <- lm(TARGDOL ~ ., data=donTRAINING2)
+summary(mrModel)
+
+##############################################
+#Calculate expected donation for each person
+##############################################
+
+#get probability that each person donates from logistic model
+donData$prob <- predict.glm(logModel2, newdata=donData, type="response")
+
+#get guess of each person's donation from multiple regression model
+donData$donGuess <- predict.lm(mrModel, newdata=donData, na.action = na.pass)
+donData$donGuess <- ifelse(donData$donGuess < 0, 0, donData$donGuess)
+
+#get expected value of each person's donation
+donData$expDon <- donData$prob * donData$donGuess
+summary(donData$expDon)
+
+
+
+
 
 
 ##############################################
