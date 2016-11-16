@@ -77,8 +77,10 @@ donData$donated <- ifelse(donData$TARGDOL>0,1,0)
 # Split into TRAINING and TEST sets
 # Remove some columns
 TESTindices <- seq(from = 3,to = nrow(donData), by = 3)
-donTRAINING <- subset( donData, select=-c(STATCODE,TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
-donTEST <- subset( donData, select=-c(STATCODE, TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+donTRAINING <- subset( donData, select=-c(STATCODE,TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3, CNMON2, CNMON3, SolType2, SolType3,ContType2,ContType3) )
+donTEST <- subset( donData, select=-c(STATCODE, TARGDOL,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3, CNMON2, CNMON3, SolType2, SolType3,ContType2,ContType3) )
+donTRAINING <- donTRAINING[-TESTindices,]
+donTEST <- donTEST[TESTindices,]
 
 #fit basic logistic regression model
 logModel <- glm(donated ~ . , data = donTRAINING, family=binomial)
@@ -108,21 +110,23 @@ x[with(x,order(-Overall)),]
 ##############################################
 
 
-logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON3+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF)^2, data = donTRAINING, family=binomial)
+logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF+SOLTYPE1)^2, data = donTRAINING, family=binomial)
 
 p2 <- predict(logModel2, newdata=donTEST, type="response")
 pr2 <- prediction(p2, donTEST$donated)
 prf2 <- performance(pr2, measure = "auc")
 prf2@y.values[[1]]
-# AUC 0.7902888
+# AUC 0.722847
 
 ##############################################
 #fit multiple regression model for predicting donation amount
 ##############################################
 
 #split into training and test set again
-donTRAINING2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
-donTEST2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3, CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3) )
+donSET2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3, CNMON2, CNMON3, SolType2, SolType3,ContType2,ContType3) )
+donTRAINING2 <- donSET2[-TESTindices,]
+donTEST2 <- donSET2[TESTindices,]
+
 
 #filter data to only people that donated
 donTRAINING2 <- donTRAINING2[donTRAINING2$TARGDOL > 0,]
@@ -145,8 +149,6 @@ donData$donGuess <- ifelse(donData$donGuess < 0, 0, donData$donGuess)
 #get expected value of each person's donation
 donData$expDon <- donData$prob * donData$donGuess
 summary(donData$expDon)
-
-
 
 
 
@@ -185,7 +187,6 @@ p <- predict(logModel2, newdata=donTEST, type="response")
 pr <- prediction(p, donTEST$donated)
 prf <- performance(pr, measure = "auc")
 prf@y.values[[1]]
-
 
 
 ################################ Unsuccessful attempt at full second order model ###########
