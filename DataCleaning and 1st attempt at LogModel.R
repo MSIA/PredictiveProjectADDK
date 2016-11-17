@@ -110,7 +110,7 @@ x[with(x,order(-Overall)),]
 ##############################################
 
 
-logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF+SOLTYPE1)^2, data = donTRAINING, family=binomial)
+logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF+SolType1)^2, data = donTRAINING, family=binomial)
 
 p2 <- predict(logModel2, newdata=donTEST, type="response")
 pr2 <- prediction(p2, donTEST$donated)
