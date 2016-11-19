@@ -1,0 +1,81 @@
+---
+title: "Predictive Analytics Project"
+author: "Dylan Fontaine, Dustin Fontaine, Kristin Meier, and Aditya Venkataraman"
+date: "November 19, 2016"
+output: pdf_document
+linestretch: 2 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, echo=F}
+'
+finalcode <- "/Users/kmeier92/Documents/Northwestern/fall2016/Predictive_Analytics/PredictiveProjectADDK/somecode.R"
+#### RUN THE FUNCTION FROM THE CODE ABOVE SO IT CAN BE REFERENCED BELOW AND WE DONT NEED TO HARD CODE ANY NUMBERS
+somefunction()
+#### SPECIFY FINAL VERSION OF MODELS TO REFERENCE THE SUMMARY STATS
+  # can have more things like this..depending on what our write up looks like!
+  # or functions to be called later that have exhibits/tables
+logistic_model <- x
+mult_reg_model <- y
+'
+# http://rmarkdown.rstudio.com/pdf_document_format.html#table_of_contents
+```
+
+## Cover Page
+
+Written Report
+The text part of the report should be no more than 20 pages (double spaced, 12 point font). Put the
+outputs, plots etc. in an appendix. The report should roughly follow the outline below.
+1. Cover page (Title, names of group members)
+
+\pagebreak
+
+# Executive Summary
+
+Give a non-technical summary of your fndings mentioning the key predictors of responders vs. non-responders and of the amount of contributions. This summary is for upper management and should not include any equations and as few statistics as possible. So don't mention things like R2 here. (About 1/2 page)
+
+\pagebreak
+
+# Introduction
+
+Describe your overall approach and any a priori hypotheses. Give a brief outline of the other sections of the report. (About 2 pages)
+
+\pagebreak
+
+# Model Fitting
+
+### Logistic Regression Model
+
+### Multiple Regression Model
+
+This is the core of the report. Divide this into two parts: (i) logistic regression model, (ii) multiple regression model. Explain the steps used in model fitting including
+exploratory analysis of data to assess the nature of relationships, detection of outliers and influential observations, linearizing and normalizing transformations etc.; different models fitted and
+methods used to fit them (e.g., stepwise regression); model diagnostics. The final model including
+residual analyses and other diagnostics resulting to data transformations. (About 12 pages)
+
+\pagebreak
+
+# Model Validation
+
+Explain how you validated the model against the test data set. Report the results about how well the model predicted the test set sales values and how well your top 1,000 predicted customers performed in terms of contributions. (About 4 pages)
+
+\pagebreak
+
+# Conclusions
+
+Draw conclusions about significant predictors, any key missing predictors which
+would have improved the model, etc. (About 2 pages)
+
+\pagebreak
+
+# References
+
+\pagebreak
+
+# Appendix (Printouts, Graphs)
+
+```{r, echo=F}
+
+```
