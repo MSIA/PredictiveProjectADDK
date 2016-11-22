@@ -66,7 +66,10 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
   donData$don2 <- with(donData, ifelse(CNDOL2 > 0,1,0))
   donData$don3 <- with(donData, ifelse(CNDOL3 > 0,1,0))
 
-
+# add dummy if donation value is increasing
+  # only applies if you've donated > 1x
+  donData$incr_don <- ifelse(donData$CNDOL2 != 0 & (donData$CNDOL1 - donData$CNDOL2 > 0),1,0)
+  
 ##############################################
 # ADD RESPONSE VARIABLE
 ##############################################
