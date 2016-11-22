@@ -4,7 +4,7 @@
 
 library(dplyr)
 
-cleandata <- function(who="krstin",
+cleandata <- function(who="kristin",
                       dropNA=TRUE){
 
 ##############################################
