@@ -24,7 +24,7 @@ address <- 'C:/Users/Dylan/Documents/Northwestern/Predictive Analytics I/PROJECT
 if(who=="dustin"){
 address <- 'C:/Users/Dustin/Documents/Northwestern/Predictive Analytics 1/PredictiveProjectADDK/'
 }
-setwd(address)
+#setwd(address)
 
 #read files
   donData <- read.table("Description and Raw Data/donation data.csv", sep = ',',header = TRUE)
@@ -135,6 +135,34 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
                      "test" = donTEST)
   
   return(returndata)
+}
+
+#function that adds all second degree terms (besides for factor columns)
+addSecondDegree <- function(myData){
+  #separate response variable
+  donated <- myData$donated
+  myData2 <- myData[,-which(names(myData)=="donated")]
   
+  #separate factors since they won't have squared terms
+  facs <- sapply(myData2, is.factor)
+  factorCols <- data.frame(myData2[,facs])
+  myData3 <- data.frame(myData2[,!facs])
+  colnames(myData3) <- colnames(myData2)[!facs]
+  
+  #add squared and interaction terms
+  myData4 <- data.frame(model.matrix(donated~I(myData3^2) + .^2 ,data=myData3))
+  
+  #add back response variable
+  myData4 <- cbind(myData4, donated)
+  myData4$X.Intercept. <- NULL
+  
+  #add back factor columns
+  myData4 <- cbind(myData4, factorCols)
+  
+  #fix column names of squared terms
+  if (ncol(myData3) > 0) {
+    colnames(myData4)[1:ncol(myData3)] <- paste(colnames(myData3),'^2',sep='')
+  }
+  return(myData4)
 }
 

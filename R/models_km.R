@@ -3,7 +3,7 @@
 library(ROCR)
 library(pROC)
 
-who = "kristin"
+who = "dylan"
 
 # Set appropriate file address
 if(who=="kristin"){
@@ -18,6 +18,7 @@ if(who=="dylan"){
 if(who=="dustin"){
   address <- 'C:/Users/Dustin/Documents/Northwestern/Predictive Analytics 1/PredictiveProjectADDK/'
 }
+setwd(address)
 
 # source R code that cleans the data as needed
 source(paste(address,'R/cleandata.R',sep=""))
@@ -83,8 +84,8 @@ sum.mod <- summary(logModel)
 
 num.pred <- nrow(sum.mod$coefficients)
 
-auc(model=logModel)
-ccr(model=logModel)
+auc(model=logModel) #0.7767594
+ccr(model=logModel) #0.732779
 
 ##########################
 # BACKWARDS STEPWISE
@@ -94,8 +95,8 @@ logModel <- glm(donated ~ . , data = donTRAINING, family=binomial)
 backwards = step(logModel)
 summary(backwards)
 
-auc(model=backwards)
-ccr(model=backwards)
+auc(model=backwards) #0.7767395
+ccr(model=backwards) #0.7320231
 
 # start
 '
@@ -129,8 +130,8 @@ donated ~ CNMON2 + CNMONL + CNDAT1 + CNMON3 + ContType1 + CONTRFST +
     SolType3 + CNTMLIF + CNMONF + CNDOL1 + CONLARG + SLCOD2 + 
 CNTRLIF + CNDOL2 + avg + avgTime + SolType1 + SEX
 '
-auc(model=forwards)
-ccr(model=forwards)
+auc(model=forwards) #0.7767682
+ccr(model=forwards) #0.7310781
 
 ######################################################
 # DO FORWARD AND BACKWARD W/ ALL QUADRATIC AND INTERACTION TERMS AS OPTIONS...
@@ -143,21 +144,30 @@ ccr(model=forwards)
   CNMON3 + CNMONF + CNMONL + ContType1 + SolType1 + SolType2 + 
   SolType3 + avg + avgTime + don2 + don3
 '
-
+logModel2 <- glm(donated ~ . , data = donTRAINING_orig, family=binomial)
 
 ####################################################
 # STOP HERE FOR NOW...ADDED QUADRATIC AND INTERACTION TERMS TO THE CLEANDATA.R
+####################################################
+#add quadratic terms and then use information gain (dylan)
+donTRAINING2 <- addSecondDegree(donTRAINING)
+donTEST <- addSecondDegree(donTEST)
 
+logModel3 <- glm(donated ~ . , data = donTRAINING2, family=binomial)
 
-logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF+SolType1)^2, data = donTRAINING, family=binomial)
+auc(model=logModel3) #0.7952067
+ccr(model=logModel3) #0.7419446
 
+#pick best features using information gain
+weights <- information.gain(donated~., donTRAINING2)
+subset <- cutoff.k(weights, 200)
+f <- as.simple.formula(subset, "donated")
 
-#install.packages('caret')
-library(caret)
-# idk exactly what this calculates, but most the variables deemed most important seem to make sense
-x<-varImp(logModel, scale = FALSE)
-x$variableName <- rownames(x)
-x[with(x,order(-Overall)),]
+logModel4 <- glm(f, data = donTRAINING2, family=binomial)
+
+auc(model=logModel4) #0.7899999
+ccr(model=logModel4) #0.7361807
+
 
 ##############################################
 # Second Order Model with some interactions included, attempting to maximize AUC
@@ -169,7 +179,7 @@ p2 <- predict(logModel2, newdata=donTEST, type="response")
 pr2 <- prediction(p2, donTEST$donated)
 prf2 <- performance(pr2, measure = "auc")
 prf2@y.values[[1]]
-# AUC 0.722847
+# AUC 0.7876269
 
 ##############################################
 #fit multiple regression model for predicting donation amount
@@ -179,7 +189,6 @@ prf2@y.values[[1]]
 donSET2 <- subset( donData, select=-c(STATCODE,ID,CNDAT1,CNDAT2,CNDAT3,CNCOD1,CNCOD2,CNCOD3, SLCOD1,SLCOD2,SLCOD3, CNMON2, CNMON3, SolType2, SolType3,ContType2,ContType3) )
 donTRAINING2 <- donSET2[-TESTindices,]
 donTEST2 <- donSET2[TESTindices,]
-
 
 #filter data to only people that donated
 donTRAINING2 <- donTRAINING2[donTRAINING2$TARGDOL > 0,]
@@ -242,28 +251,12 @@ prf <- performance(pr, measure = "auc")
 prf@y.values[[1]]
 
 
-################################ Unsuccessful attempt at full second order model ###########
+#look at importance of some features
+logModel2 <- glm(donated ~ . + (CNMONL+CNTMLIF+CNMONF+CNMON1+CNDOL1+ContType1+CONLARG+CNTRLIF+SolType1)^2, data = donTRAINING, family=binomial)
+#install.packages('caret')
+library(caret)
+# idk exactly what this calculates, but most the variables deemed most important seem to make sense
+x<-varImp(logModel, scale = FALSE)
+x$variableName <- rownames(x)
+x[with(x,order(-Overall)),]
 
-# 
-# # create 2nd order data sets
-# donTRAININGresponse <- donTRAINING$donated
-# donTESTresponse <- donTEST$donated
-# donTRAINING2 <- data.frame(model.matrix(donated~.^2, model.frame(~.,donTRAINING,na.action='na.pass')) )
-# donTEST2 <- data.frame(model.matrix(donated~.^2,model.frame(~.,donTEST,na.action='na.pass')))
-# donTRAINING2 <- cbind(donTRAINING2, donTRAININGresponse)
-# donTEST2 <- cbind(donTEST2, donTESTresponse)
-# 
-# # renaming crap so it will work
-# names(donTEST2) <- names(donTRAINING2)
-# 
-# library(ROCR)
-# # fit 2nd order model
-# logModelAAA <- glm(donTRAININGresponse~., family ='binomial', data=donTRAINING2)
-# pAAA <- predict(logModelAAA, newdata=donTEST2, type="response")
-# prAAA <- prediction(pAAA, donTEST2$donTRAININGresponse)
-# prfAAA <- performance(prAAA, measure = "auc")
-# prfAAA@y.values[[1]]
-# # AUC not any better
-# dim(donTEST2$donTESTresponse)
-# 
-# table(donTEST$donTESTresponse,pAAA>0.5)
