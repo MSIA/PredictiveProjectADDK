@@ -40,7 +40,7 @@ address <- 'C:/Users/Dustin/Documents/Northwestern/Predictive Analytics 1/Predic
   donData$CNDOL2[is.na(donData$CNDOL2)] <- 0
   donData$CNDOL3[is.na(donData$CNDOL3)] <- 0
 
-# Lookup category of each contribution type and solicitation typ 
+# Lookup category of each contribution type and solicitation type 
 donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rename(ContType1 = CODETYPE) %>%
   left_join(CodeCatTable, by = c('CNCOD2'='CODE')) %>% rename(ContType2 = CODETYPE) %>%
   left_join(CodeCatTable, by = c('CNCOD3'='CODE')) %>% rename(ContType3 = CODETYPE) %>%
@@ -48,17 +48,43 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
   left_join(CodeCatTable, by = c('SLCOD2'='CODE')) %>% rename(SolType2= CODETYPE) %>%
   left_join(CodeCatTable, by = c('SLCOD3'='CODE')) %>% rename(SolType3 = CODETYPE)
 
+# removing code columns that are no longer needed
+donData$CNCOD1 <- NULL
+donData$CNCOD2 <- NULL
+donData$CNCOD3 <- NULL
+donData$SLCOD1 <- NULL
+donData$SLCOD2 <- NULL
+donData$SLCOD3 <- NULL
+
+# remove data columns that are redundant. Months since contribution are used instead of date
+donData$CNDAT1 <- NULL
+donData$CNDAT2 <- NULL
+donData$CNDAT3 <- NULL
+
+#remove id column
+donData$ID <- NULL
+
+# fix what we believe to be mistyped values
+donData[donData$CNMONF==1146,'CNMONF'] <- 146
+
+# Get region of each state
+donData <- donData %>% left_join(stateLookup, by = c('STATCODE'='abbreviation'))
+donData$STATCODE <- NULL
+
+#remove because there are lots of NAs that hurt models
+donData$CNMON2 <- NULL
+donData$CNMON3 <- NULL
+
 ##############################################
 #ADD NEW POTENTIALLY USEFUL COLUMNS TO DATA
 ##############################################
 
-# Get region of each state
-  donData <- donData %>% left_join(stateLookup, by = c('STATCODE'='abbreviation'))
+
 
 # get average of all donations
   donData$avg <- donData$CNTRLIF / donData$CNTMLIF
 
-# get average time between donations if multiple exist, otherwise NA
+# get average time between donations if multiple exist, otherwise 0
   donData$avgTime <- with(donData, ifelse(is.finite((CNMONF - CNMON1)/ (CNTMLIF-1)),
                                           (CNMONF - CNMON1)/ (CNTMLIF-1) ,0)   )
 
@@ -83,35 +109,36 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
   #################
   # quadratic terms
   #################
-  quad.vars <- c("CNDOL1","CNTRLIF","CONLARG","CONTRFST","CNCOD1","CNCOD2","CNCOD3","CNDAT1","CNDAT2",
-                 "CNDAT3","CNDOL2","CNDOL3","CNTMLIF","SLCOD1","SLCOD2","SLCOD3","CNMON1","CNMON2","CNMON3",
-                 "CNMONF","CNMONL","avg","avgTime","don2","don3")
-  oldcolnames <- colnames(donData)
-  newcols <- paste("sq",quad.vars,sep="_")
-  for(i in quad.vars){
-    donData[,(ncol(donData)+1)] <- donData[,i]^2
-  }
-  colnames(donData) <- c(oldcolnames,newcols)
+  #quad.vars <- c("CNDOL1","CNTRLIF","CONLARG","CONTRFST",
+  #               "CNDOL2","CNDOL3","CNTMLIF","CNMON1","CNMON2","CNMON3",
+  #               "CNMONF","CNMONL","avg","avgTime","don2","don3")
+  #oldcolnames <- colnames(donData)
+  #newcols <- paste("sq",quad.vars,sep="_")
+  #for(i in quad.vars){
+  #  donData[,(ncol(donData)+1)] <- donData[,i]^2
+  #}
+  #colnames(donData) <- c(oldcolnames,newcols)
                   
   ###################
   # interaction terms
   ###################
-  inter.vars <- c("CNDOL1","CNTRLIF","CONLARG","CONTRFST","CNCOD1","CNCOD2","CNCOD3","CNDAT1","CNDAT2",
-                 "CNDAT3","CNDOL2","CNDOL3","CNTMLIF","SLCOD1","SLCOD2","SLCOD3","CNMON1","CNMON2","CNMON3",
-                 "CNMONF","CNMONL","avg","avgTime","don2","don3")
-  # possible combos
-  posscombo <- combn(inter.vars,2)
-  numcombo <- dim(posscombo)[2]
-  # EEK THERE ARE 300...
-  oldcolnames <- colnames(donData)
-  # create new column names
-  newcols <- c()
-  for(i in 1:numcombo){
-    a <- paste(posscombo[,i][1],posscombo[,i][2],sep="_")
-    newcols <- c(newcols,a)
-    donData[,(ncol(donData)+1)] <- donData[,posscombo[,i][1]]*donData[,posscombo[,i][2]]
-  }
-  colnames(donData) <- c(oldcolnames,newcols)
+  #inter.vars <- c("CNDOL1","CNTRLIF","CONLARG","CONTRFST",
+  #               "CNDOL2","CNDOL3","CNTMLIF","CNMON1",
+  #              "CNMONF","CNMONL","avg","avgTime","don2","don3", "incr_don")
+
+  ## possible combos
+  #posscombo <- combn(inter.vars,2)
+  #numcombo <- dim(posscombo)[2]
+  ## EEK THERE ARE 300...
+  #oldcolnames <- colnames(donData)
+  ## create new column names
+  #newcols <- c()
+  #for(i in 1:numcombo){
+  #  a <- paste(posscombo[,i][1],posscombo[,i][2],sep="_")
+  #  newcols <- c(newcols,a)
+  #  donData[,(ncol(donData)+1)] <- donData[,posscombo[,i][1]]*donData[,posscombo[,i][2]]
+  #}
+  #colnames(donData) <- c(oldcolnames,newcols)
   
 ##############################################
 # RETURN TEST AND TRAINING DATA
@@ -141,7 +168,9 @@ donData <- donData %>% left_join(CodeCatTable, by = c('CNCOD1'='CODE')) %>% rena
 addSecondDegree <- function(myData){
   #separate response variable
   donated <- myData$donated
+  targdol <- myData$TARGDOL
   myData2 <- myData[,-which(names(myData)=="donated")]
+  myData2 <- myData2[,-which(names(myData)=="TARGDOL")]
   
   #separate factors since they won't have squared terms
   facs <- sapply(myData2, is.factor)
@@ -152,8 +181,10 @@ addSecondDegree <- function(myData){
   #add squared and interaction terms
   myData4 <- data.frame(model.matrix(donated~I(myData3^2) + .^2 ,data=myData3))
   
-  #add back response variable
+  #add back response variables
   myData4 <- cbind(myData4, donated)
+  myData4$X.Intercept. <- NULL
+  myData4 <- cbind(myData4, targdol)
   myData4$X.Intercept. <- NULL
   
   #add back factor columns
@@ -161,8 +192,17 @@ addSecondDegree <- function(myData){
   
   #fix column names of squared terms
   if (ncol(myData3) > 0) {
-    colnames(myData4)[1:ncol(myData3)] <- paste(colnames(myData3),'^2',sep='')
+    colnames(myData4)[1:ncol(myData3)] <- paste('sq_', colnames(myData3),sep='')
   }
+  
+  #remove squared terms with only two unique values (0 and 1) 
+  for (name in colnames(myData4)[1:ncol(myData3)]){
+    if (length(unique(myData4[,name])) <= 2){
+      myData4[,name] <- NULL
+    }
+  }
+  
+  
   return(myData4)
 }
 
