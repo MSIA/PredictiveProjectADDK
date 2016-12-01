@@ -61,7 +61,6 @@ plot_p_cost <- function(p_cost_data = p_star()){
   axis(side = 2, las=1)
   axis(side = 1)
   box()
-  #mtext(text = "Thousands", side = 3, adj = 0, cex= 0.8)
   mtext(text = paste("optimal p* = ",opt_p,sep=""),
         side = 3, line = -2)
   
