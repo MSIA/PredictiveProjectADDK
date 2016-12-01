@@ -3,14 +3,14 @@
 library(ROCR)
 library(pROC)
 
-who = "dustin"
+who = "adit"
 
 # Set appropriate file address
 if(who=="kristin"){
   address <- '/Users/kmeier92/Documents/Northwestern/fall2016/Predictive_Analytics/PredictiveProjectADDK/'
 }
 if(who=="adit"){
-  address <- ''
+  address <- "/Users/arvenkat/Documents/PredictiveProjectADDK/"
 }
 if(who=="dylan"){
   address <- 'C:/Users/Dylan/Documents/Northwestern/Predictive Analytics I/PROJECT/'
@@ -117,10 +117,10 @@ donTEST_orig <- addSecondDegree(donTEST_orig)
 
 # USE OUTPUT FROM STEPWISE REGRESSION + SQUARE TERMS.
 
-"donated", "CNDOL1", "CNTRLIF", "CONLARG", "CONTRFST",
-"CNDOL2", "CNDOL3", "CNTMLIF", "SEX", "CNMON1", 
-"CNMONF", "CNMONL", "ContType1", "SolType1",
-"avg", "avgTime", "don2", "don3","incr_don"
+#"donated", "CNDOL1", "CNTRLIF", "CONLARG", "CONTRFST",
+#"CNDOL2", "CNDOL3", "CNTMLIF", "SEX", "CNMON1", 
+#"CNMONF", "CNMONL", "ContType1", "SolType1",
+#"avg", "avgTime", "don2", "don3","incr_don"
 
   
   keepcols.quad <- c("donated", "CNDOL1", "CNTRLIF", "CONLARG", "CONTRFST",  "CNDOL2", "CNDOL3",

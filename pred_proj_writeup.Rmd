@@ -2,16 +2,17 @@
 title: "Predictive Analytics Project"
 author: "Dylan Fontaine, Dustin Fontaine, Kristin Meier, and Aditya Venkataraman"
 date: "November 19, 2016"
-output: pdf_document
-linestretch: 2 
+output: html_document
+linestretch: 2
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 ```{r, echo=F}
-'
-finalcode <- "/Users/kmeier92/Documents/Northwestern/fall2016/Predictive_Analytics/PredictiveProjectADDK/somecode.R"
+source('/Users/arvenkat/Documents/PredictiveProjectADDK/R/models_km_inclNA.R')
+
+#finalcode <- "/Users/arvenkat/Documents/PredictiveProjectADDK/"
 #### RUN THE FUNCTION FROM THE CODE ABOVE SO IT CAN BE REFERENCED BELOW AND WE DONT NEED TO HARD CODE ANY NUMBERS
 somefunction()
 #### SPECIFY FINAL VERSION OF MODELS TO REFERENCE THE SUMMARY STATS
@@ -19,16 +20,21 @@ somefunction()
   # or functions to be called later that have exhibits/tables
 logistic_model <- x
 mult_reg_model <- y
-'
+
 # http://rmarkdown.rstudio.com/pdf_document_format.html#table_of_contents
 ```
 
-## Cover Page
+##1 Cover Page
 
 Written Report
 The text part of the report should be no more than 20 pages (double spaced, 12 point font). Put the
 outputs, plots etc. in an appendix. The report should roughly follow the outline below.
 1. Cover page (Title, names of group members)
+
+Generic Title
+
+Kristin Meier, Dustin Fontaine, Dylan Fontaine, Aditya Venkataraman
+
 
 \pagebreak
 
@@ -44,20 +50,37 @@ Describe your overall approach and any a priori hypotheses. Give a brief outline
 
 \pagebreak
 
-# Model Fitting
+#4 Model Fitting
 
-### Logistic Regression Model
 
-### Multiple Regression Model
+###4.1 Data Cleaning
+
+#4.1.1 
+
+#4.1.2 Added Calculated Variables
+The model involved keeping only relevant columns including some additional added variables and dropping irrelevant variables. There were a few added variables based on calculations from the previous variables. The added variables included an average dollars donated calculation (avg) that consisted of dividing the total lifetime contribution divided by the amount of times contributed. In addition, the variable "average time" was calculated from the time since the first contribution to the latest contribution divided by the average lifetime contribution wherever defined (0 otherwise). Two dummy binary variables, don2 and don3, were created to to see if the donator had donated twice or thrice. Lastly, an interaction variable to see if there was 
+
+###4.2 Logistic Regression Model Overview
+
+The main model used to classify whether a donater donated was a binary logistic regression model. The encoding was chosen such that 0 corresponds to a non-donator and 1 corresponds to a donator. Each of the logistic models that were used included various subsets, transformations and interactions of the features. The main metric used to evaluate perfomance was the AUC (area under curve) and the ROC (reciever operating charecteristic curve).
+
+
+###4.2.1 Basic Logistic Regression Model
+
+
+
+###4.2 Multiple Regression Model
 
 This is the core of the report. Divide this into two parts: (i) logistic regression model, (ii) multiple regression model. Explain the steps used in model fitting including
 exploratory analysis of data to assess the nature of relationships, detection of outliers and influential observations, linearizing and normalizing transformations etc.; different models fitted and
 methods used to fit them (e.g., stepwise regression); model diagnostics. The final model including
 residual analyses and other diagnostics resulting to data transformations. (About 12 pages)
 
+##4.3 Model Diagonsitics 
+
 \pagebreak
 
-# Model Validation
+#5 Model Validation
 
 Explain how you validated the model against the test data set. Report the results about how well the model predicted the test set sales values and how well your top 1,000 predicted customers performed in terms of contributions. (About 4 pages)
 
