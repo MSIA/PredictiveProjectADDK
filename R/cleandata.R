@@ -75,6 +75,12 @@ donData$STATCODE <- NULL
 donData$CNMON2 <- NULL
 donData$CNMON3 <- NULL
 
+#fix first donation column
+#donData$CONTRF ST <- ifelse(donData$CONTRFST==0,
+#                           ifelse(donData$CNDOL3>0,donData$CNDOL3,
+#                           ifelse(donData$CNDOL2>0,donData$CNDOL2, 
+#                           donData$CNDOL1)), donData$CONTRFST)
+
 ##############################################
 #ADD NEW POTENTIALLY USEFUL COLUMNS TO DATA
 ##############################################

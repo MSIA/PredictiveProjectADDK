@@ -179,6 +179,13 @@ num.pred2 <- nrow(sum.mod2$coefficients)
 auc(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7939676
 ccr(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7392989
 
+########################################
+#log model with quadratic and log terms
+########################################
+logModel.quad.log <- glm(donated ~ log(CNDOL1)+CNTRLIF+log(CONLARG)+log(CONTRFST+1)+log(CNDOL2+1)+CNDOL3+CNTMLIF+SEX+CNMON1+CNMONF+CNMONL+ContType1+SolType1+avg+avgTime+don2+don3+incr_don+Region+log(sq_CNDOL1)+sq_CNTRLIF+log(sq_CONLARG)+log(sq_CONTRFST+1)+log(sq_CNDOL2+1)+sq_CNDOL3+sq_CNTMLIF+sq_CNMON1+sq_CNMONF+sq_CNMONL+log(sq_avg)+sq_avgTime, data = donTRAINING.quad, family=binomial)
+
+
+
 #####################################################
 #####################################################
 ######################################################
@@ -336,8 +343,8 @@ expected.don(logModel.quad,lmModel.quad.log)
 #####################################################
 #####################################################
 
-logmodelnames = c("logModel", "logModel.quad","backwards","backwards.quad", "logModelInter")
-logmodels = list(logModel, logModel.quad, backwards, backwards.quad, logModelInter)
+logmodelnames = c("logModel", "logModel.quad","backwards","backwards.quad", "logModelInter", "logModel.quad.log")
+logmodels = list(logModel, logModel.quad, backwards, backwards.quad, logModelInter, logModel.quad.log)
 lmmodelnames = c("lmModel", "lmModel.quad", "backwards.lm.quad", "backwards.lm", "lmModel.inter", "lmModel.rminf", "lmModel.quad.rminf", "lmModel.quad.log")
 lmmodels = list(lmModel, lmModel.quad, backwards.lm.quad, backwards.lm, lmModel.inter, lmModel.rminf, lmModel.quad.rminf, lmModel.quad.log)
 
@@ -359,60 +366,55 @@ don.output[order(-don.output$exp.don),]
 
 '
 NEW
-logmodel            lmmodel  exp.don
-10  logModel.quad       lmModel.quad 10123.23
-11  logModel.quad  backwards.lm.quad 10102.23
-34  logModelInter      lmModel.inter 10070.73
-25 backwards.quad  backwards.lm.quad 10047.23
-24 backwards.quad       lmModel.quad 10032.23
-31  logModelInter       lmModel.quad 10028.73
-32  logModelInter  backwards.lm.quad 10018.73
-29 backwards.quad lmModel.quad.rminf  9977.23
-36  logModelInter lmModel.quad.rminf  9976.34
-27 backwards.quad      lmModel.inter  9975.23
-18      backwards  backwards.lm.quad  9957.23
-15  logModel.quad lmModel.quad.rminf  9945.66
-13  logModel.quad      lmModel.inter  9938.23
-4        logModel  backwards.lm.quad  9917.23
-17      backwards       lmModel.quad  9912.23
-3        logModel       lmModel.quad  9892.23
-35  logModelInter      lmModel.rminf  9891.34
-14  logModel.quad      lmModel.rminf  9872.23
-28 backwards.quad      lmModel.rminf  9857.23
-6        logModel      lmModel.inter  9777.23
-20      backwards      lmModel.inter  9760.23
-21      backwards      lmModel.rminf  9673.23
-22      backwards lmModel.quad.rminf  9663.23
-30  logModelInter            lmModel  9624.34
-33  logModelInter       backwards.lm  9624.34
-7        logModel      lmModel.rminf  9623.23
-8        logModel lmModel.quad.rminf  9603.23
-23 backwards.quad            lmModel  9602.23
-9   logModel.quad            lmModel  9589.23
-12  logModel.quad       backwards.lm  9546.23
-26 backwards.quad       backwards.lm  9534.23
-5        logModel       backwards.lm  9435.23
-19      backwards       backwards.lm  9410.23
-2        logModel            lmModel  9400.23
-16      backwards            lmModel  9380.23
-OLD
-logmodel           lmmodel         exp.don
-11      backwards      lmModel.quad 10002.229995725
-15 backwards.quad      lmModel.quad 10007.549995425
-8   logModel.quad backwards.lm.quad  10010.47999573
-7   logModel.quad      lmModel.quad 10022.549995425
-5        logModel      backwards.lm  9674.229995725
-2        logModel           lmModel  9714.229995725
-13      backwards      backwards.lm  9719.229995725
-14 backwards.quad           lmModel  9784.229995725
-10      backwards           lmModel  9789.229995725
-6   logModel.quad           lmModel  9844.229995725
-17 backwards.quad      backwards.lm  9877.229995725
-9   logModel.quad      backwards.lm  9892.229995725
-4        logModel backwards.lm.quad   9922.15999603
-12      backwards backwards.lm.quad   9927.15999603
-3        logModel      lmModel.quad  9967.229995725
-16 backwards.quad backwards.lm.quad   9995.47999573
+           logmodel            lmmodel  exp.don
+49 logModel.quad.log   lmModel.quad.log 10428.23
+17     logModel.quad   lmModel.quad.log 10340.73
+44 logModel.quad.log  backwards.lm.quad 10334.23
+43 logModel.quad.log       lmModel.quad 10295.23
+48 logModel.quad.log lmModel.quad.rminf 10280.73
+33    backwards.quad   lmModel.quad.log 10275.73
+41     logModelInter   lmModel.quad.log 10210.73
+47 logModel.quad.log      lmModel.rminf 10190.73
+46 logModel.quad.log      lmModel.inter 10182.73
+11     logModel.quad       lmModel.quad 10123.23
+12     logModel.quad  backwards.lm.quad 10102.23
+38     logModelInter      lmModel.inter 10070.73
+28    backwards.quad  backwards.lm.quad 10047.23
+27    backwards.quad       lmModel.quad 10032.23
+35     logModelInter       lmModel.quad 10028.73
+36     logModelInter  backwards.lm.quad 10018.73
+42 logModel.quad.log            lmModel  9999.73
+32    backwards.quad lmModel.quad.rminf  9977.23
+40     logModelInter lmModel.quad.rminf  9976.34
+30    backwards.quad      lmModel.inter  9975.23
+20         backwards  backwards.lm.quad  9957.23
+16     logModel.quad lmModel.quad.rminf  9945.66
+45 logModel.quad.log       backwards.lm  9939.73
+14     logModel.quad      lmModel.inter  9938.23
+4           logModel  backwards.lm.quad  9917.23
+19         backwards       lmModel.quad  9912.23
+3           logModel       lmModel.quad  9892.23
+39     logModelInter      lmModel.rminf  9891.34
+15     logModel.quad      lmModel.rminf  9872.23
+31    backwards.quad      lmModel.rminf  9857.23
+9           logModel   lmModel.quad.log  9845.23
+25         backwards   lmModel.quad.log  9815.23
+6           logModel      lmModel.inter  9777.23
+22         backwards      lmModel.inter  9760.23
+23         backwards      lmModel.rminf  9673.23
+24         backwards lmModel.quad.rminf  9663.23
+34     logModelInter            lmModel  9624.34
+37     logModelInter       backwards.lm  9624.34
+7           logModel      lmModel.rminf  9623.23
+8           logModel lmModel.quad.rminf  9603.23
+26    backwards.quad            lmModel  9602.23
+10     logModel.quad            lmModel  9589.23
+13     logModel.quad       backwards.lm  9546.23
+29    backwards.quad       backwards.lm  9534.23
+5           logModel       backwards.lm  9435.23
+21         backwards       backwards.lm  9410.23
+2           logModel            lmModel  9400.23
+18         backwards            lmModel  9380.23
 '
 # http://stackoverflow.com/questions/18177764/make-list-of-glm-in-r
 

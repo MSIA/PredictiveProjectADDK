@@ -61,7 +61,7 @@ expected.don <- function(final.log.model = logModel,
   #that will be special marketing targets. Then find their total actual donations. This is the payoff
   #and should be as high as possible.
   top1000 <- final.data[order(final.data$expDon, decreasing=T),][1:1000,]
-  tot.don <- sum(top1000$TARGDOL) 
+  tot.don <- sum(top1000$targdol) 
   
   return(tot.don)
 }
