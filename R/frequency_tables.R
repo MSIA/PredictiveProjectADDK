@@ -37,7 +37,7 @@ sol.tab <- freq_table(category <- "SolType1", categoryname <- "Latest Solicitati
 
 whole.tab <- rbind(sex.tab,cont.tab,sol.tab)
 
-png("freq_tables.png")
+png(paste(address,"exhibits/freq_tables.png",sep=""))
 tt <- ttheme_default(base_size = 10)
 grid.table(whole.tab, theme=tt, rows=NULL)
 dev.off()
