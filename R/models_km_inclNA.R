@@ -3,7 +3,7 @@
 library(ROCR)
 library(pROC)
 
-who = "dylan"
+who = "dustin"
 
 # Set appropriate file address
 if(who=="kristin"){
@@ -213,7 +213,7 @@ sum.mod.lm <- summary(lmModel)
 num.pred.lm <- nrow(sum.mod.lm$coefficients)
 
 r2.lm <- sum.mod.lm$r.squared # 0.8389792
-
+sum.mod.lm
 ##########################
 # BACKWARDS STEPWISE - LM
 ##########################
@@ -222,7 +222,7 @@ backwards.lm = step(lmModel)
 sum.back.lm = summary(backwards.lm)
 
 r2.lm.back <- sum.back.lm$r.squared # 0.838841
-
+sum.back.lm
 ' final w/ NA
 targdol ~ CNDOL1 + CNTRLIF + CONLARG + CONTRFST + 
 CNDOL2 + CNTMLIF + CNMONF + CNMONL + avg + don2 + don3 + 
@@ -293,7 +293,7 @@ r2.lm.inter <- sum.mod.lm.inter$r.squared # 0.9517647
 zz <- influence.measures(lmModel)
 inf <- which(apply(zz$is.inf,1,any))
 donTRAINING.lm2 <- donTRAINING.lm[-(inf),]
-
+?influence.measures()
 lmModel.rminf <- lm(targdol ~ ., data = donTRAINING.lm2)
 
 #fix missing levels
@@ -304,7 +304,7 @@ lmModel.rminf$xlevels[["Region"]] <- union(lmModel.rminf$xlevels[["Region"]], le
 
 sum.mod.lm2 <- summary(lmModel.rminf)
 num.pred.lm2 <- nrow(sum.mod.lm2$coefficients)
-r2.lm2 <- sum.mod.lm2$r.squared # 0.543701
+r2.lm2 <- sum.mod.lm2$r.squared # 0.6744903
 
 #####################################################
 #lm with quadratic terms added and removed influential obs
@@ -312,7 +312,7 @@ r2.lm2 <- sum.mod.lm2$r.squared # 0.543701
 #find and remove influential observations
 yy <- influence.measures(lmModel.quad)
 infl <- which(apply(yy$is.inf,1,any))
-donTRAINING.lm.quad.rminf <- donTRAINING.lm2[-(infl),]
+donTRAINING.lm.quad.rminf <- donTRAINING.lm.quad[-(infl),]
 
 lmModel.quad.rminf <- lm(targdol ~ . , data = donTRAINING.lm.quad.rminf)
 
@@ -325,7 +325,7 @@ lmModel.quad.rminf$xlevels[["Region"]] <- union(lmModel.quad.rminf$xlevels[["Reg
 
 sum.mod.lm.quad.rminf <- summary(lmModel.quad.rminf)
 num.pred.lm.quad.rminf <- nrow(sum.mod.lm.quad.rminf$coefficients)
-r2.lm2 <- sum.mod.lm2$r.squared # 0.543701
+r2.lm2 <- sum.mod.lm.quad.rminf$r.squared # 0.6852158
 
 ###########################################
 #LM QUAD. TERMS AND TAKE LOG OF SOME COLUMNS
