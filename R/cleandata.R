@@ -56,6 +56,12 @@ donData$SLCOD1 <- NULL
 donData$SLCOD2 <- NULL
 donData$SLCOD3 <- NULL
 
+#remove columns with many NA values
+donData$ContType2 <- NULL
+donData$ContType3 <- NULL
+donData$SolType2 <- NULL
+donData$SolType3 <- NULL
+
 # remove data columns that are redundant. Months since contribution are used instead of date
 donData$CNDAT1 <- NULL
 donData$CNDAT2 <- NULL

@@ -3,7 +3,7 @@
 library(ROCR)
 library(pROC)
 
-who = "dustin"
+who = "dylan"
 
 # Set appropriate file address
 if(who=="kristin"){
@@ -176,15 +176,16 @@ sum.mod2 <- summary(logModelInter)
 
 num.pred2 <- nrow(sum.mod2$coefficients)
 
-auc(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7939676
-ccr(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7392989
+auc(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7290657
+ccr(model=logModelInter, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7604186
 
 ########################################
 #log model with quadratic and log terms
 ########################################
 logModel.quad.log <- glm(donated ~ log(CNDOL1)+CNTRLIF+log(CONLARG)+log(CONTRFST+1)+log(CNDOL2+1)+CNDOL3+CNTMLIF+SEX+CNMON1+CNMONF+CNMONL+ContType1+SolType1+avg+avgTime+don2+don3+incr_don+Region+log(sq_CNDOL1)+sq_CNTRLIF+log(sq_CONLARG)+log(sq_CONTRFST+1)+log(sq_CNDOL2+1)+sq_CNDOL3+sq_CNTMLIF+sq_CNMON1+sq_CNMONF+sq_CNMONL+log(sq_avg)+sq_avgTime, data = donTRAINING.quad, family=binomial)
 
-
+auc(model=logModel.quad.log, testdata=donTEST2, testresponse = donTEST2$donated) # 0.720162
+ccr(model=logModel.quad.log, testdata=donTEST2, testresponse = donTEST2$donated) # 0.7566685
 
 #####################################################
 #####################################################
@@ -332,7 +333,7 @@ r2.lm2 <- sum.mod.lm.quad.rminf$r.squared # 0.6852158
 ###########################################
 
 lmModel.quad.log <- lm(targdol ~ log(sq_CNDOL1)+sq_CNTRLIF+log(sq_CONLARG)+log(sq_CONTRFST+1)+log(sq_CNDOL2+1)+sq_CNDOL3+sq_CNTMLIF+sq_CNMON1+sq_CNMONF+sq_CNMONL+I(log(sq_avg))+sq_avgTime+log(CNDOL1)+CNTRLIF+log(CONLARG)+log(CONTRFST+1)+log(CNDOL2+1)+CNDOL3+CNTMLIF+CNMON1+CNMONF+CNMONL+avg+avgTime+don2+don3+incr_don+SEX+ContType1+SolType1+Region, data = donTRAINING.lm.quad)
-
+summary(lmModel.quad.log)
 expected.don(logModel.quad,lmModel.quad.log)
 
 #####################################################
