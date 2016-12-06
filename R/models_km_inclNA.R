@@ -3,7 +3,7 @@
 library(ROCR)
 library(pROC)
 
-who = "dylan"
+who = "dustin"
 
 # Set appropriate file address
 if(who=="kristin"){
@@ -441,6 +441,21 @@ expected.don <- function(final.log.model = logModel,
   
   return(tot.don)
 }
+
+
+
+
+# makes plots for residual analysis
+for (i in 1:(dim(donTRAINING.lm.quad)[2])){
+  plot(donTRAINING.lm.quad[,i],residuals(lmModel.quad), xlab = colnames(donTRAINING.lm.quad)[i])
+}
+
+par(mfrow=c(2,2))
+plot(donTRAINING.lm.quad$avg,residuals(lmModel.quad), xlab = "avg", ylab="Residuals")
+plot(donTRAINING.lm.quad$CNMONF,residuals(lmModel.quad), xlab = "CNMONF", ylab="Residuals")
+plot(donTRAINING.lm.quad$CONTRFST,residuals(lmModel.quad), xlab = "CONTRFST", ylab="Residuals")
+plot(donTRAINING.lm.quad$avgTime,residuals(lmModel.quad), xlab = "avgTime", ylab="Residuals")
+
 
 ####################################################
 #####################################################
